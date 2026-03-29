@@ -5,8 +5,9 @@ import matplotlib.pyplot as plt
 plt.rc('image', cmap='gray')
 plt.rc('figure', autolayout=True)
 
-def simplifyImage(images):
-    image_path = "Image Path"
+def simplifyImage(image_path):
+
+    print("Started!")
 
     image = tf.io.read_file(image_path)
     image = tf.io.decode_jpeg(image, channels=1)  
@@ -85,32 +86,29 @@ def simplifyImage(images):
 
     print("After Fully Connected Layer Shape:", dense_output.shape)
 
-# 1. Load images from your directory
-train_ds = tf.keras.utils.image_dataset_from_directory(
-    'dataset/training',
-    image_size=(224, 224), # Standard size for models like MobileNet
-    batch_size=32
-)
+    return dense_output.shape
 
-val_ds = tf.keras.utils.image_dataset_from_directory(
-    'dataset/validation',
-    image_size=(224, 224),
-    batch_size=32
-)
+simplifyImage("dataset/training/image.png")
 
-base_model = tf.keras.applications.EfficientNetB0(input_shape=(224, 224, 3), include_top=False)
-base_model.trainable = False # Freeze the base to start
+# val_ds = tf.keras.utils.image_dataset_from_directory(
+#     'dataset/validation',
+#     image_size=(224, 224),
+#     batch_size=32
+# )
 
-model = models.Sequential([
-    base_model,
-    layers.GlobalAveragePooling2D(),
-    layers.Dropout(0.2),
-    layers.Dense(1, activation='sigmoid') # Sigmoid for binary (Fall/No Fall)
-])
+# base_model = tf.keras.applications.EfficientNetB0(input_shape=(224, 224, 3), include_top=False)
+# base_model.trainable = False # Freeze the base to start
 
-# 3. Compile and Train
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-model.fit(train_ds, validation_data=val_ds, epochs=10)
+# model = models.Sequential([
+#     base_model,
+#     layers.GlobalAveragePooling2D(),
+#     layers.Dropout(0.2),
+#     layers.Dense(1, activation='sigmoid') # Sigmoid for binary (Fall/No Fall)
+# ])
 
-# 4. Save for your app
-model.save('fallDetection.h5')
+# # 3. Compile and Train
+# model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+# model.fit(train_ds, validation_data=val_ds, epochs=10)
+
+# # 4. Save for your app
+# model.save('hurtDetection.h5')
