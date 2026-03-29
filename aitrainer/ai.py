@@ -14,14 +14,6 @@ def simplifyImage(image_path):
     image = tf.image.resize(image, [300, 300])
     image = tf.image.convert_image_dtype(image, tf.float32)
 
-    print("Original Image Shape:", image.shape)
-
-    plt.figure(figsize=(5,5))
-    plt.imshow(tf.squeeze(image))
-    plt.title("Original Image")
-    plt.axis('off')
-    plt.show()
-
     # Add batch dimension
     image = tf.expand_dims(image, axis=0)
     kernel = tf.constant([
@@ -39,22 +31,8 @@ def simplifyImage(image_path):
         padding='SAME'
     )
 
-    print("After Convolution Shape:", conv_output.shape)
-
-    plt.figure(figsize=(5,5))
-    plt.imshow(tf.squeeze(conv_output))
-    plt.title("After Convolution")
-    plt.axis('off')
-    plt.show()
     relu_output = tf.nn.relu(conv_output)
 
-    print("After ReLU Shape:", relu_output.shape)
-
-    plt.figure(figsize=(5,5))
-    plt.imshow(tf.squeeze(relu_output))
-    plt.title("After ReLU Activation")
-    plt.axis('off')
-    plt.show()
 
     pool_output = tf.nn.max_pool2d(
         input=relu_output,
@@ -63,20 +41,14 @@ def simplifyImage(image_path):
         padding='SAME'
     )
 
-    print("After Pooling Shape:", pool_output.shape)
+    # plt.figure(figsize=(5,5))
+    # plt.imshow(tf.squeeze(pool_output))
+    # plt.title("After Max Pooling")
+    # plt.axis('off')
+    # plt.show()
 
-    plt.figure(figsize=(5,5))
-    plt.imshow(tf.squeeze(pool_output))
-    plt.title("After Max Pooling")
-    plt.axis('off')
-    plt.show()
     flatten_layer = tf.keras.layers.Flatten()
     flatten_output = flatten_layer(pool_output)
-
-    print("After Flatten Shape:", flatten_output.shape)
-
-    print("First 20 Flattened Values:")
-    print(flatten_output.numpy()[0][:20])
     dense_layer = tf.keras.layers.Dense(
         units=64,         
         activation='relu' 
@@ -84,11 +56,8 @@ def simplifyImage(image_path):
 
     dense_output = dense_layer(flatten_output)
 
-    print("After Fully Connected Layer Shape:", dense_output.shape)
-
     return dense_output.shape
 
-simplifyImage("dataset/training/image.png")
 
 # val_ds = tf.keras.utils.image_dataset_from_directory(
 #     'dataset/validation',
