@@ -5,6 +5,7 @@ from faceDetectionAI import runFaceDetection
 import cv2
 import threading
 import time
+from chokeAndFallDetection import genDetection
 
 dangerThread = threading.Thread(target=inDanger)
 # Open the default camera
@@ -15,15 +16,19 @@ dangerThread = threading.Thread(target=inDanger)
 # Define the codec and create VideoWriter object
 # fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 # out = cv2.VideoWriter('output.mp4', fourcc, 20.0, (frame_width, frame_height))
+inDanger = False
 def startCam():
     cam = cv2.VideoCapture(0)
     while True:
-        time.sleep(.01)
+        inDanger = False
         if cam.isOpened():
             ret, frame = cam.read()
 
             cv2.imwrite("frame.jpg", frame)
 
+            genDetectVal = genDetection(frame)
+            if (genDetectVal > 0):
+                inDanger = True
             # Write the frame to the output file
             # out.write(frame)
             # Display the captured frame
@@ -33,9 +38,11 @@ def startCam():
                 print(detectionValue)
                 if (detectionValue >= .9):
                     print("DANGER")
-                    setDanger()
-                else:
-                    setDangerToZero()
+                    inDanger = True
+            if (inDanger):
+                setDanger()
+            else:
+                setDangerToZero()
             # Press 'q' to exit the loop
             if cv2.waitKey(1) == ord('q'):
                 break
